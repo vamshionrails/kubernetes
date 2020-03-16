@@ -1,0 +1,4 @@
+centos8:
+  image: vamshionrails/centos8
+kubernetes-master:
+  build: kubernetes-master
