@@ -1,0 +1,1 @@
+FROM vamshionrails/jenkins:latest

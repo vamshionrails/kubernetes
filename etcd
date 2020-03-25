@@ -1,0 +1,24 @@
+etcd
+-----
+
+wget https://github.com/etcd-io/etcd/releases/download/v3.4.5/etcd-v3.4.5-linux-amd64.tar.gz
+
+pacman -S grep awk ip iproute2 procps inetutils
+
+
+INT_NAME="eth0"
+ETCD_HOST_IP=$(ip addr show $INT_NAME | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+ETCD_NAME=$(hostname -s)
+
+./bin/etcd \\
+  --name ${ETCD_NAME} \\
+  --data-dir=/var/lib/etcd \\
+  --initial-advertise-peer-urls http://${ETCD_HOST_IP}:2380 \\
+  --listen-peer-urls http://${ETCD_HOST_IP}:2380 \\
+  --listen-client-urls http://${ETCD_HOST_IP}:2379,http://127.0.0.1:2379 \\
+  --advertise-client-urls http://${ETCD_HOST_IP}:2379 \\
+  --initial-cluster-token etcd-cluster-0 \\  
+  --initial-cluster-state new \
+
+  
+  nohup ./start.sh &

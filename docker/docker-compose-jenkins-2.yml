@@ -1,0 +1,57 @@
+version: '3'
+
+volumes:
+   jenkins_home:
+      external: true
+services:
+    envoy_img_1:               
+        build: ./envoy
+        expose:
+             - 7777
+             - 9901
+        networks:
+            public_net:
+                ipv4_address: ${ENVOY_PROXY_IP} 
+    jenkins_img_1:
+        container_name: ${PROJECT_NAME}_con_1
+        env_file:
+             - .env
+        build: ./jenkins/1
+        expose:
+             - 80
+             - 8080
+             - 5000
+             - 50000
+        volumes:
+             - jenkins_home:/var/jenkins_home            -
+        environment:
+             JENKINS_HOST_HOME: "/data/jenkins"
+        networks:
+            public_net:
+                ipv4_address: ${JENKINS_1_IP}
+                
+    jenkins_img_2:
+        container_name: ${PROJECT_NAME}_con_2
+        env_file:
+            - .env        
+        build: ./jenkins/2
+        expose:
+             - 80
+             - 8080
+             - 5000
+             - 50000
+        volumes:
+             - /data/jenkins:/var/jenkins_home              
+        environment:
+             JENKINS_HOST_HOME: "/data/jenkins"
+        networks:
+            public_net:
+                ipv4_address: ${JENKINS_2_IP}
+    
+networks:
+    public_net:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: ${NETWORK_SUBNET}
